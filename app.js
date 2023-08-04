@@ -2,6 +2,7 @@ require("dotenv").config();
 const cors = require("cors");
 const express = require("express");
 const {fileRoutes} = require("./routes/filesRouter.js");
+const fileupload = require('express-fileupload');
 // const { fileURLToPath } from 'url'
 // const { dirname } from 'path'
 // const path from 'path';
@@ -9,6 +10,10 @@ const {fileRoutes} = require("./routes/filesRouter.js");
 const app = express();
 app.use(cors())
 app.use(express.json());
+app.use(fileupload({
+    useTempFiles: true,
+    tempFileDir: "/tmp",
+}))
 const port = process.env.PORT || 8080;
 
 // Path
