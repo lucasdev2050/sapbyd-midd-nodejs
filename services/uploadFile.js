@@ -4,8 +4,8 @@ const config = require("../config/config.js")
 
 const fs = require("@cyclic.sh/s3fs/promises")(process.env.S3_BUCKET_NAME, config);
 
-const filePathValues = "./uploads/filteredTaxID.txt";
-const filePath = "./uploads/Padron-CABA.txt";
+const filePathValues = `${process.cwd()}/uploads/filteredTaxID.txt`;
+const filePath = `${process.cwd()}/uploads/Padron-CABA.txt`;
 // const padronCabaJson = "./uploads/padron-caba.json";
 
 async function fetchDataFromByD() {
@@ -27,7 +27,7 @@ async function writeFilteredTaxIDs(data) {
     .map((obj) => obj.PartyTaxID)
     .join("\n");
   
-  await fs.writeFile(filePathValues, filteredTaxIDs, "utf-8");
+  await fs.writeFile(filePathValues, JSON.stringify(filteredTaxIDs));
 }
 
 async function filterFileContent() {
@@ -35,15 +35,15 @@ async function filterFileContent() {
   await writeFilteredTaxIDs(dataJson);
 
   try {
-    const dataArray = (await fs.readFile(filePathValues, "utf-8")).split("\n").map((line) => line.trim());
-    const fileContent = await fs.readFile(filePath, "utf-8");
+    const dataArray = (await JSON.parse(fs.readFile(filePathValues)).split("\n").map((line) => line.trim()));
+    const fileContent = await JSON.parse(fs.readFile(filePath));
     // await fs.writeFile("./uploads/padron-caba.json", fileContent, "utf-8");
     const lines = fileContent.split("\n");
 
     const filteredLines = lines.filter((line) => dataArray.some((value) => line.includes(value)));
 
     const result = filteredLines.join("\n");
-    await fs.writeFile("./uploads/nuevoArchivo.txt", result, "utf-8");
+    await fs.writeFile(`${process.cwd()}/uploads/nuevoArchivo.txt`, JSON.stringify(result));
     
     console.log("El archivo ha sido filtrado exitosamente.");
   } catch (error) {
