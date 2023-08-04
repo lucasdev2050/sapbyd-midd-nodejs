@@ -2,12 +2,11 @@ const fs = require("fs/promises");
 const fetch = require("node-fetch");
 // AWS
 const AWS = require("aws-sdk");
-
 const s3 = new AWS.S3({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: "ca-central-1"
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
 })
+
 
 // const fs = require("@cyclic.sh/s3fs/promises")(process.env.S3_BUCKET_NAME, config);
 
@@ -35,13 +34,6 @@ async function writeFilteredTaxIDs(data) {
     .join("\n");
   
   await fs.writeFile(filePathValues, filteredTaxIDs, "utf-8");
-
-  // store something
-  await s3.putObject({
-    Body: JSON.stringify(filteredTaxIDs),
-    Bucket: process.env.S3_BUCKET_NAME,
-    Key: `filteredTaxID.txt`,
-  }).promise()
 }
 
 async function filterFileContent() {
@@ -49,29 +41,15 @@ async function filterFileContent() {
   await writeFilteredTaxIDs(dataJson);
 
   try {
-    const dataArray = (await fs.readFile(filePathValues, "utf-8")); // .split("\n").map((line) => line.trim())
-    // get it back
-    let my_file = await s3.getObject({
-      Bucket: process.env.S3_BUCKET_NAME,
-      Key: "filteredTaxID.txt",
-    }).promise()
-    console.log(JSON.parse(my_file))
-    console.log(dataArray)
-    
+    const dataArray = (await fs.readFile(filePathValues, "utf-8")).split("\n").map((line) => line.trim());
     const fileContent = await fs.readFile(filePath, "utf-8");
+    // await fs.writeFile("./uploads/padron-caba.json", fileContent, "utf-8");
     const lines = fileContent.split("\n");
 
     const filteredLines = lines.filter((line) => dataArray.some((value) => line.includes(value)));
 
     const result = filteredLines.join("\n");
-    // await fs.writeFile("./uploads/nuevoArchivo.txt", result, "utf-8");
-
-    // store something
-    await s3.putObject({
-      Body: JSON.stringify(result),
-      Bucket: process.env.S3_BUCKET_NAME,
-      Key: `nuevoArchivo.txt`,
-    }).promise()
+    await fs.writeFile("./uploads/nuevoArchivo.txt", result, "utf-8");
     
     console.log("El archivo ha sido filtrado exitosamente.");
   } catch (error) {
