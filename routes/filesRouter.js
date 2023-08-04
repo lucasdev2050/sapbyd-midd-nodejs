@@ -6,7 +6,7 @@ const fileRoutes = Router();
 //Post Method
 fileRoutes.post('/', async (req, res, next) => {
     console.log("Status: In Process..")
-    await filterFileContent().then(() => res.redirect('http://localhost:3000/'))
+    await filterFileContent().then(() => res.status(200))
 })
 
 //Get all Method
