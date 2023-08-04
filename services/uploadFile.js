@@ -1,7 +1,7 @@
 const fs = require("fs/promises");
 const fetch = require("node-fetch");
 const path = require("path");
-const git = require("nodegit");
+const simpleGit = require("simple-git");
 
 const repoURL = "https://github.com/lucasdev2050/sapbyd-midd-nodejs";
 const repoPath = path.join("/tmp", "temp-repo"); // Ruta temporal para clonar el repositorio
@@ -10,7 +10,9 @@ const filePath = path.join(repoPath, "./uploads/Padron-CABA.txt");
 async function cloneRepoAndReadFile() {
   try {
     // Clonar el repositorio
-    await git.Clone(repoURL, repoPath);
+    const git = simpleGit();
+
+    await git.clone(repoURL, repoPath);
 
   } catch (error) {
     console.error("Error:", error);
