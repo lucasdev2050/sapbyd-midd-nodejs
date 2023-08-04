@@ -41,7 +41,7 @@ async function filterFileContent() {
     const fileContent = await fs.readFile(filePath, "utf-8");
     const lines = fileContent.split("\n");
 
-    console.log("lines:" + lines)
+    console.log("fileContent:" + fileContent)
 
     const filteredLines = lines.filter((line) => dataArray.some((value) => line.includes(value)));
 
