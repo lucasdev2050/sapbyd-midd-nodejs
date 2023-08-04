@@ -37,6 +37,7 @@ async function filterFileContent() {
 
   try {
     const dataArray = (await fs.readFile(filePathValues, "utf-8")).split("\n").map((line) => line.trim());
+    console.log(dataArray)
     const fileContent = await fs.readFile(filePath, "utf-8");
     const lines = fileContent.split("\n");
 
@@ -44,6 +45,8 @@ async function filterFileContent() {
 
     const result = filteredLines.join("\n");
     await fs.writeFile(nuevoArchivo, result, "utf-8");
+
+    console.log(result);
     
     console.log("El archivo ha sido filtrado exitosamente.");
   } catch (error) {
