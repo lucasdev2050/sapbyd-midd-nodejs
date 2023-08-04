@@ -1,11 +1,26 @@
 const fs = require("fs/promises");
 const fetch = require("node-fetch");
 const path = require("path");
+const git = require("nodegit");
 
-// const fs = require("@cyclic.sh/s3fs/promises")(process.env.S3_BUCKET_NAME, config);
+const repoURL = "https://github.com/lucasdev2050/sapbyd-midd-nodejs";
+const repoPath = path.join("/tmp", "temp-repo"); // Ruta temporal para clonar el repositorio
+const filePath = path.join(repoPath, "./uploads/Padron-CABA.txt");
+
+async function cloneRepoAndReadFile() {
+  try {
+    // Clonar el repositorio
+    await git.Clone(repoURL, repoPath);
+
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
+
+cloneRepoAndReadFile();
 
 const filePathValues = path.join("/tmp", "filteredTaxID.txt");
-const filePath = "./uploads/Padron-CABA.txt";
+// const filePath = "./uploads/Padron-CABA.txt";
 const nuevoArchivo = path.join("/tmp", "nuevoArchivo.txt");
 // const padronCabaJson = "./uploads/padron-caba.json";
 
