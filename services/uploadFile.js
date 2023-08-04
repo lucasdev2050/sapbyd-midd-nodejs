@@ -1,11 +1,12 @@
 const fs = require("fs/promises");
 const fetch = require("node-fetch");
+const path = require("path");
 
 // const fs = require("@cyclic.sh/s3fs/promises")(process.env.S3_BUCKET_NAME, config);
 
-const filePathValues = "/temp/filteredTaxID.txt";
+const filePathValues = path.join("/tmp", "filteredTaxID.txt");
 const filePath = "./uploads/Padron-CABA.txt";
-const nuevoArchivo = "/temp/nuevoArchivo.txt";
+const nuevoArchivo = path.join("/tmp", "nuevoArchivo.txt");
 // const padronCabaJson = "./uploads/padron-caba.json";
 
 async function fetchDataFromByD() {
