@@ -1,5 +1,8 @@
-import fs from "fs/promises";
-import fetch from "node-fetch";
+
+const fetch = require("node-fetch");
+const config = require("../config/config.js")
+
+const fs = require("@cyclic.sh/s3fs/promises")(process.env.S3_BUCKET_NAME, config);
 
 const filePathValues = "./uploads/filteredTaxID.txt";
 const filePath = "./uploads/Padron-CABA.txt";
@@ -27,7 +30,7 @@ async function writeFilteredTaxIDs(data) {
   await fs.writeFile(filePathValues, filteredTaxIDs, "utf-8");
 }
 
-export async function filterFileContent() {
+async function filterFileContent() {
   const dataJson = await fetchDataFromByD();
   await writeFilteredTaxIDs(dataJson);
 
@@ -47,3 +50,5 @@ export async function filterFileContent() {
     console.error("Error:", error.message);
   }
 }
+
+module.exports = { filterFileContent }

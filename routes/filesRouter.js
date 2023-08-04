@@ -1,28 +1,11 @@
-import { Router } from "express";
-import { uploadFile } from "../controllers/filesController.js";
-import { filterFileContent } from "../services/uploadFile.js";
+const { Router } = require("express");
+const { filterFileContent } = require("../services/uploadFile.js");
 
 const fileRoutes = Router();
 
 //Post Method
 fileRoutes.post('/', async (req, res, next) => {
-    // Error MiddleWare for multer file upload, so if any
-    // error occurs, the image would not be uploaded!
-    uploadFile(req,res,function(err) {
-  
-        if(err) {
-  
-            // ERROR occurred (here it can be occurred due
-            // to uploading image of size greater than
-            // 1MB or uploading different file type)
-            res.send(err)
-        }
-        else {
-  
-            // SUCCESS, image successfully uploaded
-            console.log("Status: In Process..")
-        }
-    })
+    console.log("Status: In Process..")
     await filterFileContent().then(() => res.redirect('http://localhost:3000/'))
 })
 
@@ -32,4 +15,4 @@ fileRoutes.get('/download', async (req, res) => {
     res.download(file);
 })
 
-export default fileRoutes;
+module.exports = {fileRoutes}
