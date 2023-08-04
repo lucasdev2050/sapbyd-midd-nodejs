@@ -1,19 +1,13 @@
-const fs = require("fs/promises");
 const fetch = require("node-fetch");
-// AWS
 const AWS = require("aws-sdk");
 
 const s3 = new AWS.S3({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: "ca-central-1"
-})
+});
 
-// const fs = require("@cyclic.sh/s3fs/promises")(process.env.S3_BUCKET_NAME, config);
-
-const filePathValues = "./uploads/filteredTaxID.txt";
+const filePathValues = "filteredTaxID.txt";
 const filePath = "./uploads/Padron-CABA.txt";
-// const padronCabaJson = "./uploads/padron-caba.json";
 
 async function fetchDataFromByD() {
   const auth = "Basic " + Buffer.from(process.env.BYDUSERNAME + ":" + process.env.BYDPASSWORD).toString("base64");
@@ -33,15 +27,15 @@ async function writeFilteredTaxIDs(data) {
     .filter((obj) => obj.CountryCode === "AR")
     .map((obj) => obj.PartyTaxID)
     .join("\n");
-  
-  await fs.writeFile(filePathValues, filteredTaxIDs, "utf-8");
 
-  // store something
-  await s3.putObject({
-    Body: JSON.stringify(filteredTaxIDs),
+  const params = {
     Bucket: process.env.S3_BUCKET_NAME,
-    Key: `filteredTaxID.txt`,
-  }).promise()
+    Key: filePathValues,
+    Body: filteredTaxIDs,
+    ContentType: "text/plain",
+  };
+
+  await s3.upload(params).promise();
 }
 
 async function filterFileContent() {
@@ -49,34 +43,37 @@ async function filterFileContent() {
   await writeFilteredTaxIDs(dataJson);
 
   try {
-    const dataArray = (await fs.readFile(filePathValues, "utf-8")); // .split("\n").map((line) => line.trim())
-    // get it back
-    let my_file = await s3.getObject({
-      Bucket: process.env.S3_BUCKET_NAME,
-      Key: "filteredTaxID.txt",
-    }).promise()
-    console.log(JSON.parse(my_file))
-    console.log(dataArray)
-    
+    const dataArray = (
+      await s3.getObject({ Bucket: process.env.S3_BUCKET_NAME, Key: filePathValues }).promise()
+    ).Body.toString("utf-8").split("\n").map((line) => line.trim());
+
+    // const fileContent = (
+    //   await s3.getObject({ Bucket: process.env.S3_BUCKET_NAME, Key: filePath }).promise()
+    // ).Body.toString("utf-8");
+
     const fileContent = await fs.readFile(filePath, "utf-8");
+
     const lines = fileContent.split("\n");
 
-    const filteredLines = lines.filter((line) => dataArray.some((value) => line.includes(value)));
+    const filteredLines = lines.filter((line) =>
+      dataArray.some((value) => line.includes(value))
+    );
 
     const result = filteredLines.join("\n");
-    // await fs.writeFile("./uploads/nuevoArchivo.txt", result, "utf-8");
 
-    // store something
-    await s3.putObject({
-      Body: JSON.stringify(result),
+    const resultParams = {
       Bucket: process.env.S3_BUCKET_NAME,
-      Key: `nuevoArchivo.txt`,
-    }).promise()
-    
+      Key: "nuevoArchivo.txt",
+      Body: result,
+      ContentType: "text/plain",
+    };
+
+    await s3.upload(resultParams).promise();
+
     console.log("El archivo ha sido filtrado exitosamente.");
   } catch (error) {
     console.error("Error:", error.message);
   }
 }
 
-module.exports = { filterFileContent }
+module.exports = { filterFileContent };
