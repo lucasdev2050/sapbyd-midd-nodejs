@@ -4,7 +4,7 @@ const path = require("path");
 const shell = require('shelljs')
 
 const repoURL = "https://github.com/lucasdev2050/sapbyd-midd-nodejs";
-const repoPath = path.join("/tmp", "temp-repo"); // Ruta temporal para clonar el repositorio
+const repoPath = path.join("/tmp", ""); // Ruta temporal para clonar el repositorio
 const filePath = path.join(repoPath, "./uploads/Padron-CABA.txt");
 
 async function cloneRepoAndReadFile() {
