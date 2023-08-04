@@ -29,7 +29,7 @@ async function writeFilteredTaxIDs(data) {
     .join("\n");
 
   const params = {
-    Bucket: process.env.S3_BUCKET_NAME,
+    Bucket: process.env.CYCLIC_BUCKET_NAME,
     Key: filePathValues,
     Body: filteredTaxIDs,
     ContentType: "text/plain",
@@ -44,7 +44,7 @@ async function filterFileContent() {
 
   try {
     const dataArray = (
-      await s3.getObject({ Bucket: process.env.S3_BUCKET_NAME, Key: filePathValues }).promise()
+      await s3.getObject({ Bucket: process.env.CYCLIC_BUCKET_NAME, Key: filePathValues }).promise()
     ).Body.toString("utf-8").split("\n").map((line) => line.trim());
 
     // const fileContent = (
@@ -62,7 +62,7 @@ async function filterFileContent() {
     const result = filteredLines.join("\n");
 
     const resultParams = {
-      Bucket: process.env.S3_BUCKET_NAME,
+      Bucket: process.env.CYCLIC_BUCKET_NAME,
       Key: "nuevoArchivo.txt",
       Body: result,
       ContentType: "text/plain",
