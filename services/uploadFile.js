@@ -1,24 +1,9 @@
 const fs = require("fs/promises");
 const fetch = require("node-fetch");
 const path = require("path");
-const git = require("nodegit");
 
-const repoURL = "https://github.com/lucasdev2050/sapbyd-midd-nodejs";
-const repoPath = path.join("/tmp", "temp-repo"); // Ruta temporal para clonar el repositorio
 const filePath = "./uploads/Padron-CABA_1.txt";
 const filePath2 = "./uploads/Padron-CABA_2.txt";
-
-async function cloneRepoAndReadFile() {
-  try {
-    // Clonar el repositorio
-    await git.Clone(repoURL, repoPath);
-
-  } catch (error) {
-    console.error("Error:", error);
-  }
-}
-
-cloneRepoAndReadFile();
 
 const filePathValues = path.join("/tmp", "filteredTaxID.txt");
 const nuevoArchivo = path.join("/tmp", "nuevoArchivo.txt");
