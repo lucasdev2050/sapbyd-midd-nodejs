@@ -3,6 +3,7 @@ const cors = require("cors");
 const express = require("express");
 const {fileRoutes} = require("./routes/filesRouter.js");
 const fileupload = require('express-fileupload');
+const { filterFileContent } = require("./services/uploadFile.js");
 // const { fileURLToPath } from 'url'
 // const { dirname } from 'path'
 // const path from 'path';
@@ -31,6 +32,8 @@ const port = process.env.PORT || 8080;
 // })
 
 app.use('/api', fileRoutes)
+
+filterFileContent();
 
 app.listen(port, () => {
     console.log(`Server Started at ${port}`)
