@@ -45,7 +45,11 @@ async function filterFileContent() {
 
     const mergedArray = [...lines, ...lines2];
 
+    console.log("Antes de filtrar");
+
     const filteredLines = mergedArray.filter((line) => dataArray.some((value) => line.includes(value)));
+
+    console.log("llegue hasta aqui");
 
     const result = filteredLines.join("\n");
     await fs.writeFile(nuevoArchivo, result, "utf-8");
