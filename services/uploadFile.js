@@ -37,7 +37,6 @@ async function filterFileContent() {
 
   try {
     const dataArray = (await fs.readFile(filePathValues, "utf-8")).split("\n").map((line) => line.trim());
-    console.log("dataArray:" + dataArray)
     const fileContent = await fs.readFile(filePath, "utf-8");
     const fileContent2 = await fs.readFile(filePath2, "utf-8");
 
@@ -46,11 +45,7 @@ async function filterFileContent() {
 
     const mergedArray = [...lines, ...lines2];
 
-    console.log("fileContent:" + fileContent)
-
     const filteredLines = mergedArray.filter((line) => dataArray.some((value) => line.includes(value)));
-
-    console.log("filteredLines:" + filteredLines)
 
     const result = filteredLines.join("\n");
     await fs.writeFile(nuevoArchivo, result, "utf-8");
