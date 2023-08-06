@@ -32,7 +32,8 @@ async function writeFilteredTaxIDs(dataJson) {
   });
 }
 
-async function filterFileContent() {
+async function filterFileContent(req, res) {
+  console.log("Procesando..")
   const dataJson = await fetchDataFromByD();
   await writeFilteredTaxIDs(dataJson);
 
@@ -63,6 +64,8 @@ async function filterFileContent() {
     await fs.writeFile(nuevoArchivo, result, "utf-8");
 
     console.log("El archivo ha sido filtrado exitosamente.");
+
+    return res.status(200).send("Process Completed")
   } catch (error) {
     console.error("Error:", error.message);
   }
