@@ -33,8 +33,6 @@ const port = process.env.PORT || 8080;
 
 app.use('/api', fileRoutes)
 
-filterFileContent();
-
 app.listen(port, () => {
     console.log(`Server Started at ${port}`)
 })

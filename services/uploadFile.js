@@ -7,7 +7,9 @@ const filePath2 = "./uploads/Padron-CABA_2.txt";
 
 const filePathValues = path.join("/tmp", "filteredTaxID.txt");
 const nuevoArchivo = path.join("/tmp", "nuevoArchivo.txt");
-// const padronCabaJson = "./uploads/padron-caba.json";
+// const filePathValues = "./uploads/filteredTaxID.txt";
+// const nuevoArchivo = "./uploads/nuevoArchivo.txt";
+const dataValues = new Set();
 
 async function fetchDataFromByD() {
   const auth = "Basic " + Buffer.from(process.env.BYDUSERNAME + ":" + process.env.BYDPASSWORD).toString("base64");
@@ -22,13 +24,12 @@ async function fetchDataFromByD() {
   return data.d.results;
 }
 
-async function writeFilteredTaxIDs(data) {
-  const filteredTaxIDs = data
-    .filter((obj) => obj.CountryCode === "AR")
-    .map((obj) => obj.PartyTaxID)
-    .join("\n");
-  
-  await fs.writeFile(filePathValues, filteredTaxIDs, "utf-8");
+async function writeFilteredTaxIDs(dataJson) {
+  dataJson.forEach((obj) => {
+    if (obj.CountryCode === "AR") {
+      dataValues.add(obj.PartyTaxID);
+    }
+  });
 }
 
 async function filterFileContent() {
@@ -36,26 +37,31 @@ async function filterFileContent() {
   await writeFilteredTaxIDs(dataJson);
 
   try {
-    const dataArray = (await fs.readFile(filePathValues, "utf-8")).split("\n").map((line) => line.trim());
-    const fileContent = await fs.readFile(filePath, "utf-8");
-    const fileContent2 = await fs.readFile(filePath2, "utf-8");
+    const [fileContent, fileContent2] = await Promise.all([
+      fs.readFile(filePath, "utf-8"),
+      fs.readFile(filePath2, "utf-8")
+    ]);
 
-    const lines = fileContent.split("\n");
-    const lines2 = fileContent2.split("\n");
+    const dataArray = Array.from(dataValues);// Usando un Set para almacenar valores
 
-    const mergedArray = [...lines, ...lines2];
+    const filteredLines = [];
+    const mergedArray = [...fileContent.split("\n"), ...fileContent2.split("\n")];
 
-    console.log("Antes de filtrar");
+    const mapOfDataArray = new Map(); // Usando un Map para búsqueda eficiente
+    dataArray.forEach((value) => {
+      mapOfDataArray.set(value, true);
+    });
 
-    const filteredLines = mergedArray.filter((line) => dataArray.some((value) => line.includes(value)));
-
-    console.log("llegue hasta aqui");
+    for (const line of mergedArray) {
+      let s = line.substring(27, 38)
+      if (mapOfDataArray.has(s)) {
+        filteredLines.push(line);
+      }
+    }
 
     const result = filteredLines.join("\n");
     await fs.writeFile(nuevoArchivo, result, "utf-8");
 
-    console.log("result:" + result);
-    
     console.log("El archivo ha sido filtrado exitosamente.");
   } catch (error) {
     console.error("Error:", error.message);
@@ -107,6 +113,8 @@ module.exports = { filterFileContent }
 //     const dataArray = (await fs.readFile(filePathValues, "utf-8")).split("\n").map((line) => line.trim());
 //     const fileContent = await fs.readFile(filePath, "utf-8");
 //     const fileContent2 = await fs.readFile(filePath2, "utf-8");
+
+//     console.log(dataArray)
    
 //     const lines = fileContent.split("\n");
 //     const lines2 = fileContent2.split("\n");

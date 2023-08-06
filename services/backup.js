@@ -39,6 +39,8 @@ async function filterFileContent() {
     const dataArray = (await fs.readFile(filePathValues, "utf-8")).split("\n").map((line) => line.trim());
     const fileContent = await fs.readFile(filePath, "utf-8");
     const fileContent2 = await fs.readFile(filePath2, "utf-8");
+
+    console.log(dataArray)
    
     const lines = fileContent.split("\n");
     const lines2 = fileContent2.split("\n");
@@ -55,5 +57,7 @@ async function filterFileContent() {
     console.error("Error:", error.message);
   }
 }
+
+filterFileContent()
 
 module.exports = { filterFileContent }
